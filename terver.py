@@ -1,5 +1,6 @@
 from fractions import Fraction as fr
 from matplotlib import pyplot as plot
+import math
 
 
 DIGITS = 4
@@ -21,7 +22,7 @@ def get_expected_value(random_variable):
     for k, v in random_variable.items():
         exp_value += k * v
 
-    return round(exp_value, DIGITS)
+    return exp_value
 
 
 def get_squared_random_variable(random_variable):
@@ -38,7 +39,7 @@ def get_squared_random_variable(random_variable):
 def get_dispersion(random_variable):
     t1 = get_expected_value(get_squared_random_variable(random_variable))
     t2 = get_expected_value(random_variable) ** 2
-    return round(t1 - t2, DIGITS)
+    return t1 - t2
 
 
 def build_distribution_function(random_variable):
@@ -56,8 +57,26 @@ def build_distribution_function(random_variable):
 def get_median(random_variable):
     d_function = build_distribution_function(random_variable)
     for x, y in sorted(d_function.items()):
-        if y >= 0.5 and 1 - y + random_variable[x]:
+        if y >= 0.5 and 1 - y + random_variable[x] <= 0.5:
             return x
+
+
+def get_covariance(rv1, rv2):
+    t1 = get_expected_value(transform_random_variable(rv1, rv2, lambda a, b: a * b))
+    t2 = get_expected_value(rv1) * get_expected_value(rv2)
+
+    return t1 - t2
+
+
+def get_correlation(rv1, rv2):
+    cov = get_covariance(rv1, rv2)
+    result = cov / (get_standard_deviation(rv1) * get_standard_deviation(rv2))
+
+    return result
+
+
+def get_standard_deviation(random_variable):
+    return math.sqrt(get_dispersion(random_variable))
 
 
 def transform_random_variable(rv_1, rv_2, transform):
@@ -88,23 +107,28 @@ def main():
     rv_1 = {1: fr(1, 6), 2: fr(1, 6), 3: fr(1, 6), 4: fr(1, 6), 5: fr(1, 6), 6: fr(1, 6)}
     rv_2 = {1: fr(1, 12), 2: fr(1, 12), 3: fr(1, 3), 4: fr(1, 3), 5: fr(1, 12), 6: fr(1, 12)}
 
-    theta = transform_random_variable(
+    theta1 = transform_random_variable(
         transform_random_variable(rv_1, get_const_rv(2), lambda a, b: a + b),
         transform_random_variable(rv_1, rv_2, lambda a, b: a * b),
         lcm
     )
 
-    print(build_table(theta))
-    print('Expected value: ' + str(get_expected_value(theta)))
-    print('Dispersion: ' + str(get_dispersion(theta)))
+    theta2 = transform_random_variable(
+        get_squared_random_variable(rv_1),
+        transform_random_variable(rv_2, get_const_rv(3), lambda a, b: a * b),
+        gcd
+    )
 
-    func = build_distribution_function(theta)
-    x, y = zip(*func.items())
-    plot.plot(x, y)
-    plot.xlabel('Значение величины')
-    plot.ylabel('Вероятность')
+    print('Моя ДСВ')
+    print('Медиана: ', get_median(theta1))
+    print('Среднеквадратичное отклонение: ', get_standard_deviation(theta1))
+    print('-----------------------------')
 
-    plot.show()
+    print('ДСВ ФТ-302 и моя')
+    print('Ковариация: ', get_covariance(theta1, theta2))
+    print('Корреляция: ', get_correlation(theta1, theta2))
+    print('-----------------------------')
+
 
 
 
