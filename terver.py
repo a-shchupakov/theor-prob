@@ -1,4 +1,8 @@
 from fractions import Fraction as fr
+from matplotlib import pyplot as plot
+
+
+DIGITS = 4
 
 
 def build_table(random_variable):
@@ -10,6 +14,42 @@ def build_table(random_variable):
 
 def get_const_rv(value):
     return {value: 1}
+
+
+def get_expected_value(random_variable):
+    exp_value = 0
+    for k, v in random_variable.items():
+        exp_value += k * v
+
+    return round(exp_value, DIGITS)
+
+
+def get_squared_random_variable(random_variable):
+    new_rv = {}
+    for k1, v1 in random_variable.items():
+        key = k1 * k1
+        if key not in new_rv:
+            new_rv[key] = 0
+        new_rv[key] += v1
+
+    return new_rv
+
+
+def get_dispersion(random_variable):
+    t1 = get_expected_value(get_squared_random_variable(random_variable))
+    t2 = get_expected_value(random_variable) ** 2
+    return round(t1 - t2, DIGITS)
+
+
+def build_function(random_variable):
+    result = {}
+    current_prob = 0
+
+    for k, v in sorted(random_variable.items()):
+        current_prob += v
+        result[k] = current_prob
+
+    return result
 
 
 def transform_random_variable(rv_1, rv_2, transform):
@@ -40,12 +80,24 @@ def main():
     rv_1 = {1: fr(1, 6), 2: fr(1, 6), 3: fr(1, 6), 4: fr(1, 6), 5: fr(1, 6), 6: fr(1, 6)}
     rv_2 = {1: fr(1, 12), 2: fr(1, 12), 3: fr(1, 3), 4: fr(1, 3), 5: fr(1, 12), 6: fr(1, 12)}
 
-    result = transform_random_variable(
+    theta = transform_random_variable(
         transform_random_variable(rv_1, get_const_rv(2), lambda a, b: a + b),
         transform_random_variable(rv_1, rv_2, lambda a, b: a * b),
         lcm
     )
-    print(build_table(result))
+
+    print(build_table(theta))
+    print('Expected value: ' + str(get_expected_value(theta)))
+    print('Dispersion: ' + str(get_dispersion(theta)))
+
+    func = build_function(theta)
+    x, y = zip(*func.items())
+    plot.plot(x, y)
+    plot.xlabel('Значение величины')
+    plot.ylabel('Вероятность')
+
+    plot.show()
+
 
 
 if __name__ == '__main__':
