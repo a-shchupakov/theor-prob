@@ -41,15 +41,23 @@ def get_dispersion(random_variable):
     return round(t1 - t2, DIGITS)
 
 
-def build_function(random_variable):
+def build_distribution_function(random_variable):
     result = {}
     current_prob = 0
 
+    # P(X <= k)
     for k, v in sorted(random_variable.items()):
         current_prob += v
         result[k] = current_prob
 
     return result
+
+
+def get_median(random_variable):
+    d_function = build_distribution_function(random_variable)
+    for x, y in sorted(d_function.items()):
+        if y >= 0.5 and 1 - y + random_variable[x]:
+            return x
 
 
 def transform_random_variable(rv_1, rv_2, transform):
@@ -90,13 +98,14 @@ def main():
     print('Expected value: ' + str(get_expected_value(theta)))
     print('Dispersion: ' + str(get_dispersion(theta)))
 
-    func = build_function(theta)
+    func = build_distribution_function(theta)
     x, y = zip(*func.items())
     plot.plot(x, y)
     plot.xlabel('Значение величины')
     plot.ylabel('Вероятность')
 
     plot.show()
+
 
 
 
