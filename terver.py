@@ -80,11 +80,7 @@ def main():
     rv_1 = {1: fr(1, 6), 2: fr(1, 6), 3: fr(1, 6), 4: fr(1, 6), 5: fr(1, 6), 6: fr(1, 6)}
     rv_2 = {1: fr(1, 12), 2: fr(1, 12), 3: fr(1, 3), 4: fr(1, 3), 5: fr(1, 12), 6: fr(1, 12)}
 
-    theta = transform_random_variable(
-        transform_random_variable(rv_1, get_const_rv(2), lambda a, b: a + b),
-        transform_random_variable(rv_1, rv_2, lambda a, b: a * b),
-        lcm
-    )
+    theta = transform_random_variable(rv_1, rv_2, lambda a, b: lcm(a+2, a*b))
 
     print(build_table(theta))
     print('Expected value: ' + str(get_expected_value(theta)))
@@ -97,7 +93,6 @@ def main():
     plot.ylabel('Вероятность')
 
     plot.show()
-
 
 
 if __name__ == '__main__':
