@@ -107,18 +107,11 @@ def main():
     rv_1 = {1: fr(1, 6), 2: fr(1, 6), 3: fr(1, 6), 4: fr(1, 6), 5: fr(1, 6), 6: fr(1, 6)}
     rv_2 = {1: fr(1, 12), 2: fr(1, 12), 3: fr(1, 3), 4: fr(1, 3), 5: fr(1, 12), 6: fr(1, 12)}
 
-    theta1 = transform_random_variable(
-        transform_random_variable(rv_1, get_const_rv(2), lambda a, b: a + b),
-        transform_random_variable(rv_1, rv_2, lambda a, b: a * b),
-        lcm
-    )
+    theta1 = transform_random_variable(rv_1, rv_2, lambda a, b: lcm(a+2, a*b))
 
-    theta2 = transform_random_variable(
-        get_squared_random_variable(rv_1),
-        transform_random_variable(rv_2, get_const_rv(3), lambda a, b: a * b),
-        gcd
-    )
+    theta2 = transform_random_variable(rv_1, rv_2, lambda a, b: gcd(a*a, 3*b))
 
+    print(build_table(theta1))
     print('Моя ДСВ')
     print('Медиана: ', get_median(theta1))
     print('Среднеквадратичное отклонение: ', get_standard_deviation(theta1))
