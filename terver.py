@@ -109,7 +109,9 @@ def main():
 
     theta1 = transform_random_variable(rv_1, rv_2, lambda a, b: lcm(a+2, a*b))
 
-    theta2 = transform_random_variable(rv_1, rv_2, lambda a, b: gcd(a*a, 3*b))
+    theta2 = transform_random_variable(rv_1, rv_2, lambda a, b: min(2 ** a, b))
+
+    theta3 = transform_random_variable(rv_1, rv_2, lambda a, b: lcm(a+2, a*b)*min(2**a, b))
 
     print(build_table(theta1))
     print('Моя ДСВ')
@@ -117,13 +119,12 @@ def main():
     print('Среднеквадратичное отклонение: ', get_standard_deviation(theta1))
     print('-----------------------------')
 
-    print('ДСВ ФТ-302 и моя')
-    print('Ковариация: ', get_covariance(theta1, theta2))
-    print('Корреляция: ', get_correlation(theta1, theta2))
+    print('ДСВ КБ и моя')
+    cov = get_expected_value(theta3) - (get_expected_value(theta1) * get_expected_value(theta2))
+    print('Ковариация: ', cov)
+    deviations = (get_standard_deviation(theta1) * get_standard_deviation(theta2))
+    print('Корреляция: ', cov / deviations)
     print('-----------------------------')
-
-
-
 
 
 if __name__ == '__main__':
