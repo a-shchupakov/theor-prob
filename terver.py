@@ -122,6 +122,7 @@ def main():
     print('ДСВ КБ и моя')
     cov = get_expected_value(theta3) - (get_expected_value(theta1) * get_expected_value(theta2))
     print('Ковариация: ', cov)
+    print('Expected: ', 12157 / 432)
     deviations = (get_standard_deviation(theta1) * get_standard_deviation(theta2))
     print('Корреляция: ', cov / deviations)
     print('-----------------------------')
